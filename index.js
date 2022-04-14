@@ -24,6 +24,11 @@ const taskSchema = {
     timestamp:Number,
     name:String,
 }
+const taskListSchema = {
+    name:String,
+    status:String,
+    totalTime:Number,
+}
 
 const daySchema = {
     date:{
@@ -31,6 +36,7 @@ const daySchema = {
     },
     entries:[{type:String}],
     tasks:[{type:taskSchema}],
+    taskList:[{type:taskListSchema}]
 };
 
 const userSchema = new mongoose.Schema({
@@ -42,7 +48,7 @@ const userSchema = new mongoose.Schema({
     fullName:String,
     password:String,
     days:[{type:daySchema}],
-    
+    currentTask:taskSchema,
 });
 
 const User = new mongoose.model("User", userSchema);
@@ -136,9 +142,12 @@ console.log(req.user.id);
             dayIndex = user.days.length-1;
         }
     
+        const task = {name:req.body.name, timestamp:req.body.timestamp};
 
-        user.days[dayIndex].tasks.push({name:req.body.name, timestamp:req.body.timestamp});
+        user.days[dayIndex].tasks.push(task);
         
+        user.currentTask = task;
+
         user.save((err)=>{
             if(err)console.log(err);
         });
