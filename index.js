@@ -157,6 +157,25 @@ console.log(req.user.id);
 
 });
 
+app.post("/tasklist",isAuth, (req,res)=>{
+    User.findOne({_id:req.user.id},(err, user)=>{
+        if(err) return console.log(err);
+
+        const dayIndex = user.days.findIndex((d)=>d.date.getTime()===todaysDate.getTime());
+
+        user.days[dayIndex].taskList.push({name:req.body.name, status:"neutral", totalTime:0});
+
+        user.save(err=>{
+            if(err) console.log(err);
+        });
+
+        res.json({message:"Successfully added task"});
+
+    });
+
+
+});
+
 
 app.get("/", (req, res)=>{
     const user = new User({name:"Hello", password:"pass"});
